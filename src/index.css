@@ -4,8 +4,13 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #fffafa;
+  color: rgba(32, 30, 30, 0.87);
+  background: rgb(115, 146, 221);
+  background: linear-gradient(
+    310deg,
+    rgba(115, 146, 221, 0.7595413165266106) 16%,
+    rgba(250, 198, 250, 0.9472163865546218) 97%
+  );
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

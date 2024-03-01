@@ -71,7 +71,7 @@ export default function SubscriptionCalendar() {
       const requestBody = {
         data: {
           token,
-          date: selectedDate.format("DD/MM/YY"),
+          date: selectedDate.format("DD-MM-YYYY"),
         },
       };
       console.log(requestBody);
@@ -91,6 +91,7 @@ export default function SubscriptionCalendar() {
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
+        backgroundColor: "blue",
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -106,7 +107,7 @@ export default function SubscriptionCalendar() {
             {loading && <p>Loading...</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
             <CustomSubmitButton onClick={handleSubmit} disabled={loading}>
-              Submit
+              {loading ? "Proceeding..." : "Proceed"}
             </CustomSubmitButton>
           </CustomDatePickerWrapper>
         </CustomDatePickerContainer>

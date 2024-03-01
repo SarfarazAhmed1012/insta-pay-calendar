@@ -8,6 +8,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+// Define custom styled components
 const CustomDatePickerContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -51,15 +52,28 @@ const CustomSubmitButton = styled.button`
   }
 `;
 
-export default function SubscriptionCalendar() {
-  const { token } = useParams();
+const SuccessTick = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="green"
+  >
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path d="M9 16.2l-2.5-2.5L5 15l4 4 8-8-1.4-1.4-6.6 6.6z" />
+  </svg>
+);
 
+const SubscriptionCalendar = () => {
+  const { token } = useParams();
   const [selectedDate, setSelectedDate] = React.useState(dayjs("2022-04-17"));
   const [selectedTime, setSelectedTime] = React.useState(
     dayjs("2022-04-17T15:30")
   );
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(false); // State for success
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -70,14 +84,19 @@ export default function SubscriptionCalendar() {
       const requestBody = {
         data: {
           token,
-          date: selectedDate.format("DD/MM/YY"),
-          time: selectedTime.format("h:mm A"),
+          date: selectedDate.format("DD-MM-YYYY"),
+          time: selectedTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         },
       };
       console.log(requestBody);
 
       await axios.post(apiUrl, requestBody);
       console.log("Data submitted successfully");
+      setSuccess(true); // Set success state to true
+      // Automatically close the page after 3 seconds
+      //   setTimeout(() => {
+      //     window.close();
+      //   }, 3000);
     } catch (error) {
       console.error("Error submitting data:", error);
       setError("Error submitting data. Please try again.");
@@ -111,18 +130,15 @@ export default function SubscriptionCalendar() {
               onChange={setSelectedTime}
             />
             <CustomSubmitButton onClick={handleSubmit} disabled={loading}>
-              {loading ? "Submitting..." : "Submit"}
+              {loading ? "Proceeding..." : "Proceed"}
             </CustomSubmitButton>
             {error && <p style={{ color: "red" }}>{error}</p>}
+            {/* {success && <SuccessTick />} */}
           </CustomDatePickerWrapper>
-          <Link to="/scheduled/:token">
-            <span>Scheduled</span>
-          </Link>
-          <Link to="/subscription/:token">
-            <span>Subscription</span>
-          </Link>
         </CustomDatePickerContainer>
       </LocalizationProvider>
     </div>
   );
-}
+};
+
+export default SubscriptionCalendar;
