@@ -5,7 +5,7 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import styled from "@emotion/styled";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const CustomDatePickerContainer = styled.div`
@@ -115,6 +115,12 @@ export default function SubscriptionCalendar() {
             </CustomSubmitButton>
             {error && <p style={{ color: "red" }}>{error}</p>}
           </CustomDatePickerWrapper>
+          <Link to="/scheduled/:token">
+            <span>Scheduled</span>
+          </Link>
+          <Link to="/subscription/:token">
+            <span>Subscription</span>
+          </Link>
         </CustomDatePickerContainer>
       </LocalizationProvider>
     </div>
