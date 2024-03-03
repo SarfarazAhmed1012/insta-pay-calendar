@@ -91,7 +91,6 @@ export default function SubscriptionCalendar() {
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
-        backgroundColor: "blue",
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
