@@ -18,6 +18,10 @@ export default function App() {
           path="/request-subscription/:token"
           element={<SubscriptionRequest />}
         />
+        <Route
+          path="/subscription-end-date/:token"
+          element={<SubscriptionCalendarEndDate />}
+        />
       </Routes>
     </BrowserRouter>
   );
