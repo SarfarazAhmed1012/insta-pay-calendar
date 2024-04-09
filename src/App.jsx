@@ -5,6 +5,7 @@ import SubscriptionCalendar from "./pages/subscription-calendar";
 import IframeComponent from "./pages/test";
 import RequestCalendar from "./pages/schedule-payment-request";
 import SubscriptionRequest from "./pages/subscription-payment-request";
+import SubscriptionCalendarEndDate from "./pages/subscription-end-date";
 
 export default function App() {
   return (
