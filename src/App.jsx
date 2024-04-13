@@ -6,6 +6,7 @@ import IframeComponent from "./pages/test";
 import RequestCalendar from "./pages/schedule-payment-request";
 import SubscriptionRequest from "./pages/subscription-payment-request";
 import SubscriptionCalendarEndDate from "./pages/subscription-end-date";
+import SubscriptionRequestEndDate from "./pages/subscription-request-end-date";
 
 export default function App() {
   return (
@@ -22,6 +23,10 @@ export default function App() {
         <Route
           path="/subscription-end-date/:token"
           element={<SubscriptionCalendarEndDate />}
+        />
+        <Route
+          path="/subscription-request/end-date/:token"
+          element={<SubscriptionRequestEndDate />}
         />
       </Routes>
     </BrowserRouter>

@@ -76,7 +76,7 @@ const SuccessImage = styled.img`
   margin-bottom: 20px;
 `;
 
-export default function SubscriptionCalendarEndDate() {
+export default function SubscriptionRequestEndDate() {
   const tomorrow = dayjs().add(1, "day"); // Get tomorrow's date
 
   const [selectedDate, setSelectedDate] = useState(tomorrow);
@@ -95,7 +95,7 @@ export default function SubscriptionCalendarEndDate() {
     setError(null);
     try {
       const apiUrl =
-        "https://ip-dev-85ba34ddc4a3.herokuapp.com/api/webhook/set-subscription-calendar-end-date";
+        "https://ip-dev-85ba34ddc4a3.herokuapp.com/api/webhook/set-subscription-request-end-date";
       const requestBody = {
         data: {
           token,
