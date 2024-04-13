@@ -25,7 +25,7 @@ export default function App() {
           element={<SubscriptionCalendarEndDate />}
         />
         <Route
-          path="/subscription-request/end-date/:token"
+          path="/subscription-request-end-date/:token"
           element={<SubscriptionRequestEndDate />}
         />
       </Routes>
