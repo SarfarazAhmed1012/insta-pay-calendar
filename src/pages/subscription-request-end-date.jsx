@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -7,6 +7,7 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import styled from "@emotion/styled";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import CryptoJS from "crypto-js";
 
 // Styled components for custom styling
 const CustomDatePickerContainer = styled.div`
@@ -42,26 +43,24 @@ const CustomDatePicker = styled(MobileDatePicker)`
 const CustomSubmitButton = styled.button`
   margin-top: 20px;
   padding: 10px 20px;
-  /* background-color: #007bff; */
-  background: rgb(3, 51, 164);
-  background: linear-gradient(
-    310deg,
-    rgba(3, 51, 164, 0.8) 16%,
-    rgba(240, 11, 240, 0.8) 97%
-  );
+  background: ${(props) =>
+    !props.isValid
+      ? "rgb(138, 160, 211)"
+      : "linear-gradient(310deg, rgba(240, 11, 240, 0.8) 16%, rgba(3, 51, 164, 0.8) 97%)"}; /* Gradient color if valid, else default gradient color */
   color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${(props) =>
+    !props.isValid
+      ? "pointer"
+      : "not-allowed"}; /* Set cursor to pointer or not-allowed based on isValid */
   font-size: 16px;
 
   &:hover {
-    background: rgb(3, 51, 164);
-    background: linear-gradient(
-      310deg,
-      rgba(3, 51, 164, 0.9668242296918768) 16%,
-      rgba(240, 11, 240, 0.9472163865546218) 97%
-    );
+    background: ${(props) =>
+      !props.isValid
+        ? "rgb(138, 160, 211)"
+        : "linear-gradient(310deg, rgba(192, 6, 192, 0.8) 16%, rgba(4, 51, 160, 0.8) 97%)"}; /* Gradient color on hover if valid, else default gradient color */
   }
 `;
 
@@ -83,13 +82,63 @@ export default function SubscriptionRequestEndDate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [isValidDate, setIsValidDate] = useState(true);
+  const { token, date } = useParams();
 
-  const { token } = useParams();
-  console.log("Token:", token);
+  var bytes = CryptoJS.AES.decrypt(date, "subscription_date_encryption");
+  var pass = bytes.toString(CryptoJS.enc.Utf8);
+
+  console.log(pass, "decrypted");
+
+  console.log("Token:", date);
+
+  useEffect(() => {
+    if (pass) {
+      const providedDate = dayjs(pass, "DD-MM-YYYY");
+      const minSelectableDate = providedDate.add(1, "month");
+      setSelectedDate((prevDate) =>
+        prevDate.isBefore(minSelectableDate) ? minSelectableDate : prevDate
+      );
+    }
+  }, [pass]);
 
   //   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZW5kZXJJZCI6IjcyMjQ3NTUwMDc2MDgxMjMiLCJpbnN0YUNoYXRib3RJZCI6IjY1ZGVlYjFmNmM1MDJlZDliMGE1ZDdiZSIsImlhdCI6MTcwOTI3MTgyNCwiZXhwIjoxNzA5Mjg5ODI0fQ.O9Pz-6cEMB1F6h8mqPjGKAU6IRWQa_fUuwat63zZmFQ
 
+  // useEffect(() => {
+  //   if (date) {
+  //     // Parse the date from the URL parameters
+  //     const providedDate = dayjs(date, "DD-MM-YYYY");
+
+  //     // Calculate the minimum selectable date (one month or more from the provided date)
+  //     const minSelectableDate = providedDate.add(1, "month");
+
+  //     // Set the minimum selectable date on the date picker
+  //     setSelectedDate((prevDate) =>
+  //       prevDate.isBefore(minSelectableDate) ? minSelectableDate : prevDate
+  //     );
+  //   }
+  // }, [date]);
+
+  const handleDateChange = (newDate) => {
+    const providedDate = dayjs(pass, "DD-MM-YYYY");
+    const minSelectableDate = providedDate.add(1, "month");
+
+    setSelectedDate(newDate);
+
+    if (
+      newDate.isBefore(minSelectableDate) ||
+      newDate.isSame(providedDate, "day")
+    ) {
+      setIsValidDate(false);
+    } else {
+      setIsValidDate(true);
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!isValidDate) {
+      return;
+    }
     setSuccess(false);
     setLoading(true);
     setError(null);
@@ -150,18 +199,24 @@ export default function SubscriptionRequestEndDate() {
                 <MobileDatePicker
                   id="datepicker"
                   value={selectedDate}
-                  onChange={setSelectedDate}
+                  onChange={handleDateChange}
                   disabled={loading}
                   minDate={tomorrow}
                 />
               </div>
+              {!isValidDate && (
+                <p style={{ color: "red" }}>
+                  {`Please select a date after one month from ${pass}.`}
+                </p>
+              )}
               {error && <p style={{ color: "red" }}>{error}</p>}
               <CustomSubmitButton
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={loading || !isValidDate}
                 style={{
-                  cursor: `${loading ? "default" : "pointer"}`,
+                  cursor: `${loading || !isValidDate ? "default" : "pointer"}`,
                 }}
+                isValid={isValidDate}
               >
                 {loading ? "Proceeding..." : "Proceed"}
               </CustomSubmitButton>
