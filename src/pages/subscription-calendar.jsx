@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import dayjs from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -7,6 +7,9 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import styled from "@emotion/styled";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { useTimezones } from "../contexts/TimezoneContext";
 
 // Styled components for custom styling
 const CustomDatePickerContainer = styled.div`
@@ -77,7 +80,12 @@ const SuccessImage = styled.img`
 `;
 
 export default function SubscriptionCalendar() {
+  const timezones = useTimezones();
   const tomorrow = dayjs().add(1, "day"); // Get tomorrow's date
+
+  const [selectedTimezone, setSelectedTimezone] = React.useState(
+    timezones?.timezones?.length > 0 ? timezones.timezones[0]?.timezone : ""
+  );
 
   const [selectedDate, setSelectedDate] = useState(tomorrow);
   const [loading, setLoading] = useState(false);
@@ -93,6 +101,8 @@ export default function SubscriptionCalendar() {
     setSuccess(false);
     setLoading(true);
     setError(null);
+    const formattedTimezone = selectedTimezone.split("-")[1];
+
     try {
       const apiUrl =
         "https://ip-dev-85ba34ddc4a3.herokuapp.com/api/webhook/set-subscription-calendar";
@@ -100,6 +110,7 @@ export default function SubscriptionCalendar() {
         data: {
           token,
           date: selectedDate.format("DD-MM-YYYY"),
+          timezone: formattedTimezone,
         },
       };
       console.log(requestBody);
@@ -152,6 +163,36 @@ export default function SubscriptionCalendar() {
                   disabled={loading}
                   minDate={tomorrow}
                 />
+              </div>
+              <div
+                style={{
+                  maxWidth: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CustomLabel htmlFor="timepicker">
+                  Select a Timezone:
+                </CustomLabel>
+                <Select
+                  value={selectedTimezone}
+                  onChange={(e) => setSelectedTimezone(e.target.value)}
+                  displayEmpty
+                  id="timezone"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {timezones?.timezones.length > 0 &&
+                    timezones?.timezones?.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country.name + "-" + country.timezone}
+                      >
+                        {`${country.name} - ${country.timezone}`}
+                      </MenuItem>
+                    ))}
+                </Select>
               </div>
               {error && <p style={{ color: "red" }}>{error}</p>}
               <CustomSubmitButton

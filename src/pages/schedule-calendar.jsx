@@ -7,6 +7,9 @@ import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { useTimezones } from "../contexts/TimezoneContext";
 
 // Define custom styled components
 const CustomDatePickerContainer = styled.div`
@@ -90,12 +93,16 @@ const SuccessTick = () => (
 );
 
 const SubscriptionCalendar = () => {
+  const timezones = useTimezones();
   const { token } = useParams();
   const tomorrow = dayjs().add(1, "day"); // Get tomorrow's date
 
   const [selectedDate, setSelectedDate] = React.useState(tomorrow);
   const [selectedTime, setSelectedTime] = React.useState(
     dayjs("2022-04-17T15:30")
+  );
+  const [selectedTimezone, setSelectedTimezone] = React.useState(
+    timezones?.timezones?.length > 0 ? timezones.timezones[0]?.timezone : ""
   );
 
   const [loading, setLoading] = React.useState(false);
@@ -105,6 +112,8 @@ const SubscriptionCalendar = () => {
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
+    const formattedTimezone = selectedTimezone.split("-")[1];
+
     try {
       const apiUrl =
         "https://ip-dev-85ba34ddc4a3.herokuapp.com/api/webhook/set-schedule-calendar";
@@ -113,6 +122,7 @@ const SubscriptionCalendar = () => {
           token,
           date: selectedDate.format("DD-MM-YYYY"),
           time: selectedTime.format("h:mm A"),
+          timezone: formattedTimezone,
         },
       };
       console.log(requestBody);
@@ -183,6 +193,36 @@ const SubscriptionCalendar = () => {
                   value={selectedTime}
                   onChange={setSelectedTime}
                 />
+              </div>
+              <div
+                style={{
+                  maxWidth: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CustomLabel htmlFor="timepicker">
+                  Select a Timezone:
+                </CustomLabel>
+                <Select
+                  value={selectedTimezone}
+                  onChange={(e) => setSelectedTimezone(e.target.value)}
+                  displayEmpty
+                  id="timezone"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {timezones?.timezones.length > 0 &&
+                    timezones?.timezones?.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country.name + "-" + country.timezone}
+                      >
+                        {`${country.name} - ${country.timezone}`}
+                      </MenuItem>
+                    ))}
+                </Select>
               </div>
               <CustomSubmitButton
                 onClick={handleSubmit}
