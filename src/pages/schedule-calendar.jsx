@@ -211,7 +211,7 @@ const SubscriptionCalendar = () => {
                   id="timezone"
                 >
                   <MenuItem value="">
-                    <em>None</em>
+                    <em>System Default</em>
                   </MenuItem>
                   {timezones?.timezones.length > 0 &&
                     timezones?.timezones?.map((country, index) => (

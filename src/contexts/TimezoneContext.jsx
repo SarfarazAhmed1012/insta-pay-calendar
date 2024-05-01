@@ -14,7 +14,9 @@ export const TimezonesProvider = ({ children }) => {
           "https://ip-dev-85ba34ddc4a3.herokuapp.com/api/account/get-all-timezones"
         );
         const decryptedData = decryptData(response.data.data);
-        setTimezones(decryptedData?.countriesWithTimezones || []);
+        setTimezones(
+          decryptedData?.filteredTimezonesAccordingToCountryName || []
+        );
         console.log("Decrypted data:", decryptedData);
       } catch (error) {
         console.log(error);
